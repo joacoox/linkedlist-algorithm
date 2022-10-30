@@ -4,6 +4,7 @@ int main(void) {
 
 	setbuf(stdout, NULL);
 	int opcion;
+	int id=0;
 	int jugadores=0;
 	int altaConfirmada;
 	int bajaConfirmada;
@@ -26,12 +27,13 @@ int main(void) {
 		        switch(opcion){
 
 		           case 1:
-		        	   altaConfirmada = altaJugador(listaJugador, TAMJUGADOR, listaConfederacion, TAMCONF, jugadores);
+		        	   altaConfirmada = altaJugador(listaJugador, TAMJUGADOR, listaConfederacion, TAMCONF, id);
 		        	   comprobarConfirmacion("Se dio de alta con exito el jugador",
 		        	   					"Error, No se pudo dar de alta el jugador, puede ser que este lleno de jugadores",
 		        	   					altaConfirmada);
 		        	   if(altaConfirmada == 1){
 		        		   jugadores= jugadores +1;
+		        		   id = id+1;
 		        	   }
 		           break;
 		           case 2:
@@ -41,6 +43,10 @@ int main(void) {
 		        	 		        	   					"Error, No se pudo dar de baja el jugador",
 		        	 		        	   					bajaConfirmada);
 		        	   }else{Error(1);}
+
+		        	   if(bajaConfirmada == 1){
+		        	  	jugadores= jugadores -1;
+		        	   }
 		           break;
 		           case 3:
 		        	   if(jugadores>0){
