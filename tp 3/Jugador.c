@@ -232,17 +232,20 @@ int ModificacionesJugador(LinkedList* pArrayListJugador)
 	int size;
 	int auxId;
 	int retorno = 0;
+	int retornoIndex;
     Jugador* jugador;
 
  if(pArrayListJugador != NULL)
  {
 	 do{
-		 index	= getInt("Ingrese el id a modificar: ", "Error, ingrese un id valido: ", 1, 5000);
-       opcion = subMenuModificaciones();
-       }
-         while(index < 0 || index > 5000);
+		 printf("Ingrese el id a modificar: \n");
+		 retornoIndex = getEntero(&index);
 
-	size = ll_len(pArrayListJugador);
+       }while((index < 0 || index > 5000) && retornoIndex != 0);
+
+
+      opcion = subMenuModificaciones();
+      size = ll_len(pArrayListJugador);
 
        for(int i = 0; i<size; i++)
        {
@@ -307,9 +310,9 @@ int jug_ModificacionEdad(Jugador* this)
 	{
 		do
 		{
-		auxEdad	= getInt("Ingrese la edad: ", "Error, ingrese una edad valida: ", 1, 100);
+		printf("Ingrese la edad\n");
 		}
-		 while(auxEdad <= 1 || auxEdad >= 100);
+		 while((auxEdad < 16 || auxEdad > 50) && (getEntero(&auxEdad) !=0));
 
 		jug_setEdad(this, auxEdad);
 		retorno = 1;
@@ -435,6 +438,8 @@ int jug_convocar(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion)
     int convocados;
     int indexJugador;
     int indexSeleccion;
+
+    int retornoNumeros;
     Jugador* jugador;
     Seleccion* seleccion;
 
@@ -445,15 +450,19 @@ int jug_convocar(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion)
 
 		do
 		{
-			 indexJugador = getInt("Ingrese el id del jugador que quiere convocar: ", "error, elegiste un numero invalido", 1, 5000);
-		}while(indexJugador <= 0 || indexJugador > 5000);
+			printf("Ingrese el id del jugador que quiere convocar: ");
+			retornoNumeros= getEntero(&indexJugador);
+
+		}while((indexJugador <= 0 || indexJugador > 5000) && retornoNumeros != 0);
 
 		controller_listarSelecciones(pArrayListSeleccion);
 
 		do
 		{
-			 indexSeleccion = getInt("Ingrese la seleccion a la que quiere convocar al jugador: ", "error, numero invalido", 1, 32);
-		}while(indexSeleccion  < 0 || indexSeleccion  > 33);
+			 printf("Ingrese la seleccion a la que quiere convocar al jugador: ");
+			 retornoNumeros= getEntero(&indexSeleccion);
+
+		}while((indexSeleccion  < 0 || indexSeleccion  > 33) && retornoNumeros != 0);
 
 		size=ll_len(pArrayListJugador);
         sizeConf = ll_len(pArrayListSeleccion);
@@ -493,6 +502,7 @@ int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador)
 	int size;
     int jugadorId;
     int indexJugador;
+    int retornoNum;
     Jugador* jugador;
 
 	if(pArrayListJugador!= NULL)
@@ -502,8 +512,10 @@ int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador)
 
 		do
 		{
-			 indexJugador = getInt("Ingrese el id del jugador que quiere quitar: ", "error, elegiste un numero invalido", 1, 5000);
-		}while(indexJugador < 0 || indexJugador > 5000);
+			 printf("Ingrese el id del jugador que quiere quitar: \n");
+			 retornoNum = getEntero(&indexJugador);
+
+		}while((indexJugador < 0 || indexJugador > 5000) && retornoNum != 0);
 
 		size=ll_len(pArrayListJugador);
 
@@ -550,7 +562,7 @@ void jug_printJugadoresListados(LinkedList* pArrayListJugador)
 				jug_getIdSeleccion(jugador, &idSeleccion);
 				if(idSeleccion != 0)
 				{
-			    	printf("%5d %-25s %-25d %-25s %-25s\n",id,nombreCompleto,edad,posicion,nacionalidad);
+			    	jug_printOne(jugador);
 				}
 		}
 	}

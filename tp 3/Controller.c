@@ -37,16 +37,18 @@ int controller_cargarJugadoresDesdeBinario(char* path , LinkedList* pArrayListJu
 {
 	FILE* pArchivo;
     int indexSeleccion;
+    int retornoNum;
       int retorno = 0;
 	if(path != NULL && pArrayListJugador != NULL)
 	{
 
 		controller_listarSelecciones(pArrayListSeleccion);
 		do{
-			indexSeleccion = getInt("Ingrese la id de la seleccion que quiere cargar a binario con sus respectivos jugadores \n"
-				                            , "Error, selecciono una id invalida", 1, 32);
 
-		}while(indexSeleccion < 1 || indexSeleccion > 32);
+			printf("Ingrese la id de la seleccion que quiere cargar a binario con sus respectivos jugadores \n");
+			retornoNum  = getEntero(&indexSeleccion);
+
+		}while((indexSeleccion < 1 || indexSeleccion > 32) && retornoNum != 0);
 		pArchivo = fopen(path, "wb");
 
 	retorno	= parser_JugadorToBinary(pArchivo, pArrayListJugador, indexSeleccion);
@@ -113,9 +115,9 @@ int controller_agregarJugador(LinkedList* pArrayListJugador, LinkedList* pArrayL
 
 						do
 						{
-						auxEdad	= getInt("Ingrese la edad: ", "Error, ingrese una edad valida: ", 1, 100);
+							printf("Ingrese la edad: \n");
 						}
-						 while(auxEdad <= 1 || auxEdad >= 100);
+						 while((auxEdad < 16 || auxEdad > 50) && (getEntero(&auxEdad) !=0) && (auxEdad != ' '));
 
 						jug_setEdad(jugador, auxEdad);
 
@@ -188,9 +190,10 @@ int controller_removerJugador(LinkedList* pArrayListJugador)
 	{
 		controller_listarJugadores(pArrayListJugador);
 
-	do{	index = getInt("\nPRECAUCION, SI INGRESA MAL UNA ID DARA DE BAJA AL JUGADOR EQUIVOCADO\nIngrese la id a dar de baja: ",
-				"Error, ingrese una ID valida: ", 0, 5000);
-	  }while(index < 0 || index > 5000);
+	do{	printf("\nPRECAUCION, SI INGRESA MAL UNA ID DARA DE BAJA AL JUGADOR EQUIVOCADO\nIngrese la id a dar de baja: \n");
+
+
+	  }while((index < 0 || index > 5000) && (getEntero(&index) !=0));
 
 		size = ll_len(pArrayListJugador);
 

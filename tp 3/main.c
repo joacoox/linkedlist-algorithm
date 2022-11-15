@@ -15,6 +15,7 @@ int main()
     int cargaSelecciones;
     int cargaBinario;
     int bandera=0;
+    int guardaArchivos;
 
     LinkedList* listaJugadores;
     listaJugadores = ll_newLinkedList();
@@ -126,17 +127,24 @@ int main()
 				{
 			retorno = controller_guardarJugadoresModoTexto("jugadores.csv",listaJugadores);
 			comprobarConfirmacion("\n\t\t||---------GUARDAR JUGADORES CON EXITO---------|| \n", "Error, no se pudieron guardar las selecciones \n", retorno);
-
+			guardaArchivos+= retorno;
 			retorno	= controller_guardarSeleccionesModoTexto("selecciones.csv",listaSelecciones);
 				 comprobarConfirmacion("\n\t\t||---------GUARDAR SELECCIONES CON EXITO---------|| \n", "Error, no se pudieron guardar las selecciones \n", retorno);
+			guardaArchivos+= retorno;
 				}else
 					{
 					 printf("Cargue los datos de jugadores y de selecciones primero \n");
 					}
 			break;
 			case 11:
-               bandera = getInt("Esta seguro que quiere salir del programa?\n0-No\n1-Si\n Su opcion: ", "Error, ingrese un nº valido: ",
- 								  0, 1);
+				if(guardaArchivos == 2)
+				{
+					getEntero(&bandera);
+				}
+				else
+				{
+					printf("Guarde los archivos en la opcion 10 para salir del programa \n");
+				}
 			break;
 
         }

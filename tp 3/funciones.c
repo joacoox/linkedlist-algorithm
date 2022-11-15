@@ -3,7 +3,7 @@
 int mostrarMenu(void)
 {
 	 int opcion;
-
+	 int retorno = -1;
 	printf("\n\t\t\t\t\tMenu principal\n");
 	printf("\t\t\t\t\t--------------\n\n\n");
 	printf("\t\t\tOpcion 1: CARGA DE ARCHIVOS.\n");
@@ -18,9 +18,13 @@ int mostrarMenu(void)
 	printf("\t\t\tOpcion 10: GUARDAR ARCHIVOS .CSV.\n");
 	printf("\t\t\tOpcion 11: Salir.\n");
 	printf("\n\t\tSu opcion: ");
-	scanf("%d", &opcion);
 
-		return opcion;
+    if(getEntero(&opcion)==0)
+    {
+    	retorno = opcion;
+    }
+
+		return retorno;
 }
 void comprobarConfirmacion(char mensaje[], char eMensaje[], int retorno){
 	if (retorno == 1) {
@@ -56,13 +60,15 @@ void Listados(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion){
 int subMenuListados(void){
 
 	int retorno;
+    int retornoNumero;
 
 		do {printf("\n---------------------------\n");
 			printf("         Listados      \n");
 			printf("---------------------------\n");
 			printf(" 1:Todos los jugadores \n 2:Todas las selecciones \n 3:JUGADORES CONVOCADOS \n 4:SALIR\n Su opcion: \n");
-			scanf("%d", &retorno);
-		}while(retorno < 1 || retorno > 4);
+           retornoNumero  = getEntero(&retorno);
+		}while((retorno < 1 || retorno > 4) && (retornoNumero !=0));
+
 
 		return retorno;
 
@@ -70,13 +76,15 @@ int subMenuListados(void){
 int subMenuModificaciones(void){
 
 	int retorno;
-
+    int numero;
 		do {printf("\n---------------------------\n");
 			printf("         Modificaciones      \n");
 			printf("---------------------------\n");
 			printf(" 1:Nombre \n 2:Edad \n 3:Posicion \n 4:Nacionalidad \n 5:SALIR\n Su opcion: \n");
-			scanf("%d", &retorno);
-		}while(retorno < 1 || retorno > 5);
+
+			numero = getEntero(&retorno);
+
+		}while((retorno < 1 || retorno > 5) && numero !=0);
 
 		return retorno;
 
@@ -116,13 +124,16 @@ int ListadosOrdenadosPorCriterio(LinkedList* pArrayListJugador, LinkedList* pArr
 int subMenuOrdenarListar(void){
 
 	int retorno;
+	int numero;
 
 		do {printf("\n---------------------------\n");
 			printf("        ORDENAR Y LISTAR      \n");
 			printf("---------------------------\n");
 			printf(" 1:JUGADORES POR NACIONALIDAD. \n 2:SELECCIONES POR CONFEDERACIÓN. \n 3:JUGADORES POR EDAD. \n 4: JUGADORES POR NOMBRE. \n 5:SALIR\n Su opcion: \n");
-			scanf("%d", &retorno);
-		}while(retorno < 1 || retorno > 5);
+
+			numero = getEntero(&retorno);
+
+		}while((retorno < 1 || retorno > 5) &&  numero !=0);
 
 		return retorno;
 
@@ -130,13 +141,15 @@ int subMenuOrdenarListar(void){
 int subMenuConvocaciones(void)
 {
 	int retorno;
+    int numero;
 
 		do {printf("\n---------------------------\n");
 			printf("        CONVOCAR JUGADORES     \n");
 			printf("---------------------------\n");
 			printf(" 1:CONVOCAR \n 2:QUITAR DE LA SELECCIÓN. \n 3:SALIR\n Su opcion: \n");
-			scanf("%d", &retorno);
-		}while(retorno < 1 || retorno > 3);
+            numero = getEntero(&retorno);
+
+		}while((retorno < 1 || retorno > 3) && numero !=0);
 
 		return retorno;
 

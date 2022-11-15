@@ -7,8 +7,6 @@
 #include <ctype.h>
 #include <time.h>
 
-int getInt(char mensaje[],char eMensaje[],int min, int max);
-float getFloat(char mensaje[], char eMensaje[], float minLimit, float maxLimit);
 int getChar(char* input,char message[], char eMessage[], char lowLimit, char hiLimit);
 void getString(char cadena[],char mensaje[], char eMensaje[], int minLimit, int maxLimit);
 int getStringLetras(char mensaje[],char input[]);
@@ -17,4 +15,7 @@ float sacarPromedio(int resultado, int acumulador);
 int NumeroRepetido(int array[], int i, int numAleatorio,int tamanioArray);
 int esSoloLetas(char cadena[]);
 void PasarAMinusculas(char cadena[], char oracion[]);
+int getEntero(int* pResultado);
+int esNumerica(char* cadena, int limite);
+int getStrings(char* cadena, int longitud);
 #endif
