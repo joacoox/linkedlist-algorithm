@@ -12,14 +12,15 @@
 #include <time.h>
 
 
-int getInt(char mensaje[],char eMensaje[],int min, int max);
 float getFloat(char mensaje[], char eMensaje[], float minLimit, float maxLimit);
 int getChar(char* input,char message[], char eMessage[], char lowLimit, char hiLimit);
 void getString(char cadena[],char mensaje[], char eMensaje[], int minLimit, int maxLimit);
-int esSoloLetras(char str[]);
+int esSoloLetas(char cadena[]);
 int getStringLetras(char mensaje[],char input[]);
 int esAlfaNumerico(char str[]);
-void getPosicion(char cadena[]);
+int getEntero(int* pResultado);
+int esNumerica(char* cadena, int limite);
+int getStrings(char* cadena, int longitud);
 #endif /* INPUT_H_ */
 
 

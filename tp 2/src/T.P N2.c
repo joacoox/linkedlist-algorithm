@@ -1,11 +1,12 @@
 #include "input.h"
+#include "jugador.h"
+#include "confederacion.h"
 
 int main(void) {
 
 	setbuf(stdout, NULL);
 	int opcion;
 	int id=0;
-	int jugadores=0;
 	int altaConfirmada;
 	int bajaConfirmada;
 	int bandera = 0;
@@ -17,9 +18,13 @@ int main(void) {
 	                                            {104,"CONCACAF", "NORTE Y CENTRO AMERICA",1961,OCUPADO},
 	                                            {105,"OFC", "OCEANIA",1966,OCUPADO}};
 
-	eJugador listaJugador[TAMJUGADOR];
+	int jugadores=0; // cantidad de jugadores si es = 0 hay que dar de alta para que se pueda usar el programa
+	// si se hardcodea la lista hay que sumar los jugadores a esta variable de control
 
-	inicializarJugadores(listaJugador, TAMJUGADOR);
+	 eJugador listaJugador[TAMJUGADOR];
+
+
+	inicializarJugadores(listaJugador, TAMJUGADOR); // si se va a hardcodear esta funcion te inicializa todos lo espacios en libre
 
 	   do{
 		        opcion = MostrarMenu();
@@ -59,12 +64,13 @@ int main(void) {
 		        	   }else{Error(1);}
 		           break;
 		           case 5:
-		        	   bandera = getInt("Esta seguro que quiere salir del programa?\n0-No\n1-Si\n Su opcion: ", "Error, ingrese un nº valido: ",
- 								0, 1);
+		        	   printf("Esta seguro de que quiere salir del programa? \n0-No\n1-Si\n Su opcion:");
+		        	  getEntero(&bandera);
 		           break;
 		        }
 		    }
 		    while(bandera != 1);
 
+	   printf("\n\t\tADIOS VUELVA PRONTOS");
 	return EXIT_SUCCESS;
 }

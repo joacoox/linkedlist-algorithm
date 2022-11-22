@@ -7,6 +7,7 @@
 int MostrarMenu(void)
 {
     int opcion;
+    int retorno = -1;
 	printf("\n\t\t\t\t\tMenu principal\n");
 	printf("\t\t\t\t\t--------------\n\n\n");
 	printf("\t\t\tOpcion 1: Alta de Jugador.\n");
@@ -15,9 +16,13 @@ int MostrarMenu(void)
 	printf("\t\t\tOpcion 4: Informes.\n");
 	printf("\t\t\tOpcion 5: Salir.\n");
 	printf("\n\t\tSu opcion: ");
-	scanf("%d", &opcion);
 
-	return opcion;
+	if(getEntero(&opcion)==0)
+	    {
+	    	retorno = opcion;
+	    }
+
+	return retorno;
 }
 /**
  * \brief compruebo la confirmacion
@@ -43,7 +48,8 @@ void comprobarConfirmacion(char mensaje[], char eMensaje[], int retorno)
 void mostrarListadoConfederacion(eConfederacion lista[], int size)
 {
 	Headers(2);
-	for(int i = 0; i<size;i++){
+	for(int i = 0; i<size;i++)
+	{
 		printf("|%3d| |   %-10s         |  |%-25s|\t\t| %-10d |\n",lista[i].id, lista[i].nombre, lista[i].region, lista[i].anioCreacion);
 	}
 }
@@ -59,39 +65,49 @@ void ModificarJugador(eJugador lista[], int size, eConfederacion listaConfederac
 {
 	int opcion;
 	int auxId;
+	int retornoFuncion;
 
 		 Headers(1);
 	ListadoDeConfederaciones(listaConfederacion,  sizeConf, lista, size);
-	auxId = getInt("Ingrese el codigo que quiere modificar: ", "Error, ingrese un codigo valido", 1, 1000);
 
-	do{
-		opcion = subMenuJugadores();
-		switch(opcion){
-		case 1:
-			ModificarNombre(lista, size, auxId);
-		break;
-		case 2:
-			ModificarPosicion(lista, size, auxId);
-		break;
-		case 3:
-			ModificarNumCamiseta(lista, size, auxId);
-		break;
-		case 4:
-			ModificarConfederacion(lista, size, auxId,listaConfederacion, sizeConf);
-		break;
-		case 5:
-			ModificarSueldo(lista, size, auxId);
-		break;
-		case 6:
-			ModificarAniosContrato(lista, size, auxId);
-		break;
-		case 7:
-			printf("volviendo al menu \n");
-		break;
-		}
+	do
+	{
+		printf("Ingrese el codigo que quiere modificar: \n");
 	}
-	while(opcion != 7);
+	 while(auxId < 0 || (getEntero(&auxId) !=0));
 
+	retornoFuncion  = BuscarIdValido(lista, size, auxId);
+
+	  if(retornoFuncion == 1)
+	  {
+		do{
+			opcion = subMenuJugadores();
+			switch(opcion){
+			case 1:
+				ModificarNombre(lista, size, auxId);
+			break;
+			case 2:
+				ModificarPosicion(lista, size, auxId);
+			break;
+			case 3:
+				ModificarNumCamiseta(lista, size, auxId);
+			break;
+			case 4:
+				ModificarConfederacion(lista, size, auxId,listaConfederacion, sizeConf);
+			break;
+			case 5:
+				ModificarSueldo(lista, size, auxId);
+			break;
+			case 6:
+				ModificarAniosContrato(lista, size, auxId);
+			break;
+			case 7:
+				printf("volviendo al menu \n");
+			break;
+			}
+		}
+		while(opcion != 7);
+	  }else{printf("No hay ningun jugador con esa id \n");}
 }
 /**
  * \brief muestro un submenu de jugadores
@@ -101,14 +117,15 @@ void ModificarJugador(eJugador lista[], int size, eConfederacion listaConfederac
 int subMenuJugadores(){
 
 	int retorno;
+	int retornoNumero;
 
 	do{
 		printf("\n         Modificaciones        \n");
 		printf("---------------------------\n");
 		printf(
 				"1- Nombre y apellido \n 2- Posicion \n 3- Numero de camiseta \n 4- Confederacion \n 5- Salario \n 6- Duracion del contrato\n7-Salir\n Su opcion:");
-		scanf("%d", &retorno);
-	}while(retorno < 1 || retorno > 7);
+		  retornoNumero  = getEntero(&retorno);
+		}while((retorno < 1 || retorno > 7) || (retornoNumero !=0));
 
 	return retorno;
 }
@@ -136,11 +153,10 @@ void Informes(eJugador lista[], int size, eConfederacion listaConf[], int sizeCo
         	   ListadoDeConfederaciones(listaConf,  sizeConf, lista, size);
            break;
            case 2:
-        	   Headers(4);
-        	   ListadoConfederaciones(lista,size, listaConf, sizeConf);
+        	   ListarConfederacion(lista, size, listaConf, sizeConf);
            break;
            case 3:
-        	   JugadoresCobranMasQuePromedio(lista, size);
+        	   PromedioDeTodosLosSalarios(lista, size);
            break;
            case 4:
         	   ConfederacionConMayorDuracionContratos(lista,size, listaConf, sizeConf);
@@ -167,14 +183,15 @@ void Informes(eJugador lista[], int size, eConfederacion listaConf[], int sizeCo
 int subMenuInformes(void){
 
 	int retorno;
+	int retornoNumero;
 
 		do {printf("\n---------------------------\n");
 			printf("         Informes        \n");
 			printf("---------------------------\n");
 			printf(" 1 Listado de los jugadores ordenados alfabéticamente por nombre de confederación y nombre de jugador\n 2 Listado de confederaciones con sus jugadores \n 3 Total y promedio de todos los salarios\n 4 Informar la confederación con mayor cantidad de años de contratos total.");
 			printf("\n 5 Informar porcentaje de jugadores por cada confederación.  \n 6 Informar cual es la región con más jugadores y el listado de los mismos.\n 7 SALIR\n Su opcion:");
-			scanf("%d", &retorno);
-		}while(retorno < 1 || retorno > 7);
+			  retornoNumero  = getEntero(&retorno);
+			}while((retorno < 1 || retorno > 7) && (retornoNumero !=0));
 
 		return retorno;
 
@@ -188,9 +205,9 @@ void Headers(int opcion)
 {
 	switch(opcion){
 	case 1:
-	printf("\n----------------------------------------------------------------------------------------------------------------------\n");
-	printf("|ID|        |Nombre|\t         |Posicion|       |Nº Camiseta|  |Sueldo|  |Confederacion|  |Años de contrato|");
-	printf("\n----------------------------------------------------------------------------------------------------------------------\n");
+	printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
+	printf("|ID|        |Nombre|\t         |Posicion|                  |Nº Camiseta|  |Sueldo|             |Confederacion|     |Años de contrato|");
+	printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
 	break;
 	case 2:
     printf("\n----------------------------------------------------------------------------------------------------------------------\n");
@@ -220,10 +237,10 @@ void MostrarUnJugador(eJugador lista, eConfederacion listaConfederacion, int opc
 {
 	switch(opcion){
 	case 1:
-  printf("|%3d| |   %-10s         |  |%-15s| |%-10d| |%-10.f| |%10s| |%15d\t|\n", lista.id, lista.nombre, lista.posicion, lista.numeroCamiseta, lista.salario, listaConfederacion.nombre, lista.anioscontrato);
+  printf("|%3d| |%-25s|  |%-20s| |%-15d| |%-15.f| |%15s| |%15d\t|\n", lista.id, lista.nombre, lista.posicion, lista.numeroCamiseta, lista.salario, listaConfederacion.nombre, lista.anioscontrato);
 	break;
 	case 2:
-  printf("|   %-10s         |  |   %-10s         |\n",listaConfederacion.nombre, lista.nombre);
+  printf("|   %-25s         |\n", lista.nombre);
 	break;
 	}
 }
@@ -233,9 +250,9 @@ void MostrarUnJugador(eJugador lista, eConfederacion listaConfederacion, int opc
  * \param contador la cantidad de jugadores que cobran mas que el promedio
  * \return void
  */
-void MostrarJugadoresSueldoMayorPromedio(int promedio, int contador){
-
-	printf("El promedio de todos los salarios es de: %d y la cantidad de jugadores que cobra mas que el promedio es : %d\n", promedio,contador);
+void MostrarJugadoresSueldoMayorPromedio(int promedio, int jugadoresQueSuperanElPromedio, int total)
+{
+	printf("Total y promedio de todos los salarios y cuántos jugadores cobran más delsalario promedio\n total: %d \n promedio: %d\n jugadores que superan: %d\n",total ,promedio,jugadoresQueSuperanElPromedio);
 }
 /*
  * \brief submenu de las confederaciones
@@ -245,14 +262,15 @@ void MostrarJugadoresSueldoMayorPromedio(int promedio, int contador){
 int subMenuConfederaciones(){
 
 	int retorno;
+    int retornoNumero;
 
 	do{
 		printf("\n         Modificaciones        \n");
 		printf("---------------------------\n");
 		printf(
 				"1- Nombre\n 2- Region \n 3- Anio de creacion \n 4- Salir\n Su opcion:");
-		scanf("%d", &retorno);
-	}while(retorno < 1 || retorno > 7);
+		  retornoNumero  = getEntero(&retorno);
+		}while((retorno < 1 || retorno > 4) && (retornoNumero !=0));
 
 	return retorno;
 }
@@ -292,7 +310,7 @@ void ImprimirUnaConfederacionConUnaVariable(eConfederacion lista, float variable
 		 printf("La confederacion con mas anios de contrato es %s anios = %.0f \n", lista.nombre, variable);
 	break;
 	case 2:
-		printf("\t%s \t\t\t  %-5.2f\n", lista.nombre, variable);
+		printf("\t%5s \t\t\t  %-25.2f\n", lista.nombre, variable);
 	break;
 	case 3:
 		 printf("La region con mas jugadores es %s con  %.0f jugadores \n", lista.region, variable);

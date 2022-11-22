@@ -1,28 +1,6 @@
 #include "input.h"
 
 
-/**
- * \brief Solicita un número al usuario y devuelve el resultado
- * \param mensaje Es el mensaje a ser mostrado
- * \param eMensaje Es el mensaje de error a ser mostrado
- * \param min es el minimo
- * \param max es el maximo
- * \return El número ingresado por el usuario
- *
- */
-int getInt(char mensaje[], char eMensaje[], int min, int max) {
-	int auxiliar;
-
-	printf("%s", mensaje);
-	scanf("%d", &auxiliar);
-	while (auxiliar < min || auxiliar > max) {
-		printf("%s", eMensaje);
-		scanf("%d", &auxiliar);
-	}
-
-	return auxiliar;
-}
-
 /** \brief Solicita un numero flotante al usuario
  *
  * \param mensaje recibe un mensaje para mostrar
@@ -106,24 +84,27 @@ void getString(char cadena[], char mensaje[], char eMensaje[], int minLimit,
 }
 
 /**
- * \brief Verifica si el valor recibido contiene solo letras
- * \param str Array con la cadena a ser analizada
- * \return 1 si contiene solo ' ' y letras y 0 si no lo es
+ * \brief Verifica si la cadena ingresada es un nombre valido
+ * \param cadena Cadena de caracteres a ser analizada
+ * \return Retorna 1 (verdadero) si la cadena es valida y 0 (falso) si no lo es
  *
  */
-int esSoloLetras(char str[]) {
-	int i = 0;
-	int retorno;
-	retorno = 1;
-	while (str[i] != '\0') {
-		if ((str[i] != ' ') && (str[i] < 'a' || str[i] > 'z')
-				&& (str[i] < 'A' || str[i] > 'Z')) {
-			retorno = 0;
-			i++;
-		}
+int esSoloLetas(char cadena[])
+{
+	 int i=0;
+		int retorno = 1;
 
-	}
-	return retorno;
+
+			for(i=0 ; cadena[i] != '\0'; i++)
+			{
+				if((cadena[i] != ' ') && (cadena[i] < 'A' || cadena[i] > 'Z' ) && (cadena[i] < 'a' || cadena[i] > 'z' ))
+				{
+					retorno = 0;
+					break;
+				}
+			}
+
+		return retorno;
 }
 
 /**
@@ -131,7 +112,7 @@ int esSoloLetras(char str[]) {
  * \param mensaje Es el mensaje a ser mostrado
  * \param input Array donde se cargará el texto ingresado
  * \return 1 si el texto contiene solo letras
- */
+ */ /*
 int getStringLetras(char mensaje[], char input[]) {
 	char aux[256];
 	int retorno;
@@ -142,7 +123,7 @@ int getStringLetras(char mensaje[], char input[]) {
 		retorno = 1;
 	}
 	return retorno;
-}
+}*/
 
 /**
  * \brief Verifica si el valor recibido contiene solo letras y números
@@ -165,26 +146,85 @@ int esAlfaNumerico(char str[]) {
 	}
 	return retorno;
 }
-/*
- * \brief paso a minusculas lo que el usuario ingrese y valido el tamanio del texto
- * \param cadena la cadena de caracteres a modificar
- * \return void
+/**
+ * \brief Obtien un numero entero
+ * \param pResultado Puntero al espacio de memoria donde se dejara el resultado de la funcion
+ * \return Retorna 0 (EXITO) si se obtiene un numero entero y -1 (ERROR) si no
+ *
  */
-void getPosicion(char cadena[])
+int getEntero(int* pResultado)
 {
-	char posicion[DESCRIPTION_SIZE];
+    int retorno=-1;
+    char bufferString[50];
+    if(	pResultado != NULL &&
+    	getStrings(bufferString,sizeof(bufferString)) == 0 &&
+    	esNumerica(bufferString,sizeof(bufferString)))
+	{
+		retorno=0;
+		*pResultado = atoi(bufferString) ;
 
-do{
-	getString(posicion, "Ingrese la posicion\n arquero, defensor, mediocampista o delantero\n su opcion: ",
-	    	 					"Error, ingrese una posicion valida: ", 7, 14);
-
-	for(int i =0; posicion[i]!= '\0'; i++){
-		posicion[i] = tolower(posicion[i]);
 	}
-
-}while(strcmp(posicion,"mediocampista") != 0 && strcmp(posicion,"arquero") != 0 &&strcmp(posicion,"defensor") != 0 &&strcmp(posicion,"delantero") != 0);
-
-
-	strcpy(cadena, posicion);
+    return retorno;
 }
+/**
+ * \brief Verifica si la cadena ingresada es numerica
+ * \param cadena Cadena de caracteres a ser analizada
+ * \return Retorna 1 (verdadero) si la cadena es numerica, 0 (falso) si no lo es y -1 en caso de error
+ *
+ */
+int esNumerica(char* cadena, int limite)
+{
+	int retorno = -1; // ERROR
+	int i;
+	if(cadena != NULL && limite > 0)
+	{
+		retorno = 1; // VERDADERO
+		for(i=0;i<limite && cadena[i] != '\0';i++)
+		{
+			if(i==0 && (cadena[i] == '+' || cadena[i] == '-'))
+			{
+				continue;
+			}
+			if(cadena[i] < '0'||cadena[i] > '9')
+			{
+				retorno = 0;
+				break;
+			}
+			//CONTINUE
+		}
+		//BREAK
+	}
+	return retorno;
+}
+/**
+ * \brief 	Lee de stdin hasta que encuentra un '\n' o hasta que haya copiado en cadena
+ * 			un máximo de 'longitud - 1' caracteres.
+ * \param pResultado Puntero al espacio de memoria donde se copiara la cadena obtenida
+ * \param longitud Define el tamaño de cadena
+ * \return Retorna 0 (EXITO) si se obtiene una cadena y -1 (ERROR) si no
+ *
+ */
+int getStrings(char* cadena, int longitud)
+{
+	int retorno=-1;
+	char bufferString[4096]; // *****************************
 
+	if(cadena != NULL && longitud > 0)
+	{
+		fflush(stdin);
+		//__fpurge(stdin); // Linux
+		if(fgets(bufferString,sizeof(bufferString),stdin) != NULL)
+		{
+			if(bufferString[strnlen(bufferString,sizeof(bufferString))-1] == '\n')
+			{
+				bufferString[strnlen(bufferString,sizeof(bufferString))-1] = '\0';
+			}
+			if(strnlen(bufferString,sizeof(bufferString)) <= longitud)
+			{
+				strncpy(cadena,bufferString,longitud);
+				retorno=0;
+			}
+		}
+	}
+	return retorno;
+}

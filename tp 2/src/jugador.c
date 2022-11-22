@@ -22,11 +22,13 @@ void inicializarJugadores(eJugador lista[], int size){
  */
 int altaJugador(eJugador lista[], int size, eConfederacion listaConfederacion[], int sizeConf, int jugadores){
 
-	int retorno = -1;
-   short auxCamiseta;
+   int retorno = -1;
+   int auxCamiseta;
    int auxConfederacion;
-   float auxSueldo;
-   short auxContrato;
+   int auxSueldo;
+   int auxContrato;
+   int retornoFuncion;
+   char auxNombre[DESCRIPTION_SIZE];
 
     for(int i = 0; i<size; i++){
 
@@ -34,8 +36,12 @@ int altaJugador(eJugador lista[], int size, eConfederacion listaConfederacion[],
 
     	 lista[i].id = jugadores + 1;
 
-    	 getString(lista[i].nombre, "Ingrese el nombre y apellido: ",
+    	do{ getString(auxNombre, "Ingrese el nombre y apellido: ",
     	 					"Error, ingrese un nombre valido: ", 3, DESCRIPTION_SIZE);
+
+    	  }while(esSoloLetas(auxNombre) == 0);
+
+    	strcpy(lista[i].nombre, auxNombre);
 
     	 fflush(stdin);
 
@@ -43,23 +49,41 @@ int altaJugador(eJugador lista[], int size, eConfederacion listaConfederacion[],
 
     	 fflush(stdin);
 
-    	 auxCamiseta =  getInt("Ingrese el nº de camiseta del jugador: ", "Error, ingrese un nº valido: ",
-    	     	 								0, 100);
-    	 lista[i].numeroCamiseta = auxCamiseta;
+			do{
+				printf("Ingrese el numero de camiseta: \n");
+			retornoFuncion = getEntero(&auxCamiseta);
+
+			}while((auxCamiseta < 0 || auxCamiseta > 100) || retornoFuncion == 1);
+
+           lista[i].numeroCamiseta = auxCamiseta;
 
     	mostrarListadoConfederacion(listaConfederacion, sizeConf);
 
-         auxConfederacion = getInt("Ingrese el id de la confederacion del jugador: ", "Error, ingrese un id valido: ",
-					100, 99+TAMCONF);
-    	 lista[i].idConfederacion = auxConfederacion;
+    	do
+		{
+			printf("Ingrese la id de la confederacion en la que su jugador juega: \n");
+			retornoFuncion = getEntero(&auxConfederacion);
+		}
+		 while(retornoFuncion != 0 || (BuscarConfederacionPorId(listaConfederacion, sizeConf, auxConfederacion) != 1));
 
-    	auxSueldo = getFloat("Ingrese el valor mensual del contrato: ",
-    						"Error, ingrese numero valido: ", 0, 999999);
+         lista[i].idConfederacion = auxConfederacion;
+
+         do
+		{
+			printf("Ingrese el valor mensual del contrato: \n");
+			retornoFuncion = getEntero(&auxSueldo);
+		}
+		 while(auxSueldo < 0 ||  retornoFuncion !=0);
 
     	lista[i].salario = auxSueldo;
 
-    	auxContrato =  getInt("Ingrese la duracion del contrato en anios: ", "Error, ingrese un anio valido: ",
-    	    	 								0, 30);
+    	do
+		{
+			printf("Ingrese la duracion del contrato en anios: \n");
+			retornoFuncion = getEntero(&auxContrato);
+		}
+		 while((auxContrato < 0 || auxContrato > 20) || retornoFuncion !=0);
+
     	 lista[i].anioscontrato = auxContrato;
 
     	 lista[i].estado = OCUPADO;
@@ -85,21 +109,35 @@ int BajaJugador(eJugador lista[], int size, eConfederacion listaConfederacion[],
 	int i;
 	int retorno = -1;
 	int index;
+	int retornoFuncion;
 
 	   Headers(1);
 	   ListadoDeConfederaciones(listaConfederacion,  sizeConf, lista, size);
 
-    index = getInt("\n Ingrese el id a dar de baja: ","\n Error el id ingresado supera los limites: ",0,1000);
+   do
+	{
+		printf("Ingrese el id a dar de baja: \n");
+	}
+	 while(index < 0 || (getEntero(&index) !=0));
 
-    for(i =0 ; i < size; i++)
-        {
-          if(lista[i].id == index)
-          {
-              lista[i].estado = LIBRE;
-              retorno = 1;
-              break;
-          }
-        }
+	   retornoFuncion  = BuscarIdValido(lista, size, index);
+
+      if(retornoFuncion == 1)
+      {
+
+		   for(i =0 ; i < size; i++)
+			{
+
+				  if(lista[i].id == index)
+				  {
+					  lista[i].estado = LIBRE;
+					  retorno = 1;
+					  break;
+				  }
+
+			}
+      }else{printf("No hay un jugador con esa id\n");}
+
 
     return retorno;
 }
@@ -112,16 +150,20 @@ int BajaJugador(eJugador lista[], int size, eConfederacion listaConfederacion[],
  */
 void ModificarNombre(eJugador lista[], int size, int index)
 {
+	char auxNombre[DESCRIPTION_SIZE];
 	for (int i = 0; i < size; i++) {
 
 		if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-	    	 getString(lista[i].nombre, "Ingrese el nombre y apellido: ",
-	    	 					"Error, ingrese un nombre valido: ", 3, DESCRIPTION_SIZE);
-	    	 fflush(stdin);
+			do{ getString(auxNombre, "Ingrese el nombre y apellido: ",
+			    	 					"Error, ingrese un nombre valido: ", 3, DESCRIPTION_SIZE);
+
+			    	  }while(esSoloLetas(auxNombre) == 0);
+
+			    	strcpy(lista[i].nombre, auxNombre);
 	    	 Error(2);
 			      break;
-		}else{Error(3);}
+		}
 	}
 }
 /*
@@ -140,7 +182,7 @@ void ModificarPosicion(eJugador lista[], int size, int index)
 			getPosicion(lista[i].posicion);
 			Error(2);
 		break;
-		}else{Error(3);}
+		}
 	}
 }
 /*
@@ -152,17 +194,23 @@ void ModificarPosicion(eJugador lista[], int size, int index)
  */
 void ModificarNumCamiseta(eJugador lista[], int size, int index)
 {
-	short auxCamiseta;
+	int auxCamiseta;
+	int retornoFuncion;
+
 	for (int i = 0; i < size; i++) {
 
 		if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-			auxCamiseta =  getInt("Ingrese el nº de camiseta del jugador: ", "Error, ingrese un nº valido: ",
-			    	     	 								0, 100);
-			lista[i].numeroCamiseta = auxCamiseta;
+			do{
+				printf("Ingrese el numero de camiseta: \n");
+			retornoFuncion = getEntero(&auxCamiseta);
+
+			}while((auxCamiseta < 0 || auxCamiseta > 100) || retornoFuncion == 1);
+
+		   lista[i].numeroCamiseta = auxCamiseta;
 			   Error(2);
 			      break;
-		}else{Error(3);}
+		}
 	}
 }
 /*
@@ -197,18 +245,25 @@ void ModificarSueldo(eJugador lista[], int size, int index)
 void ModificarConfederacion(eJugador lista[], int size, int index,eConfederacion listaConfederacion[], int sizeConf)
 {
 	int auxConfederacion;
+	int retornoFuncion;
+
 	for (int i = 0; i < size; i++) {
 
 		if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-		mostrarListadoConfederacion(listaConfederacion, sizeConf);
+		do
+		{
+			printf("Ingrese la id de la confederacion en la que su jugador juega: \n");
+			retornoFuncion = getEntero(&auxConfederacion);
+		}
+		 while(retornoFuncion != 0 || (BuscarConfederacionPorId(listaConfederacion, sizeConf, auxConfederacion) != 1));
 
-		auxConfederacion = getInt("Ingrese el id de la confederacion del jugador: ", "Error, ingrese un id valido: ",
-							100, 99+TAMCONF);
-	    lista[i].idConfederacion = auxConfederacion;
+		 lista[i].idConfederacion = auxConfederacion;
+
 	    Error(2);
+
 		 break;
-		}else{Error(3);}
+		}
 	}
 }
 /*
@@ -220,17 +275,25 @@ void ModificarConfederacion(eJugador lista[], int size, int index,eConfederacion
  */
 void ModificarAniosContrato(eJugador lista[], int size, int index)
 {
-	short auxContrato;
+	int auxContrato;
+	int retornoFuncion;
+
 	for (int i = 0; i < size; i++) {
 
 		if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-			auxContrato =  getInt("Ingrese la duracion del contrato ", "Error, ingrese un anio valido: ",
-			    	    	 								0, 30);
-			lista[i].anioscontrato = auxContrato;
+			do
+			{
+				printf("Ingrese la duracion del contrato en anios: \n");
+				retornoFuncion = getEntero(&auxContrato);
+			}
+			 while((auxContrato < 0 || auxContrato > 20) || retornoFuncion !=0);
+
+			 lista[i].anioscontrato = auxContrato;
+
 			Error(2);
-			      break;
-		}else{Error(3);}
+			break;
+		}
 	}
 }
 /*
@@ -255,4 +318,67 @@ void OrdenamientoDeJugadorAlfabeticamente(eJugador lista[], int size)
     		   }
     	   }
        }
+}
+/*
+ * \brief paso a minusculas lo que el usuario ingrese y valido el tamanio del texto
+ * \param cadena la cadena de caracteres a modificar
+ * \return void
+ */
+void getPosicion(char cadena[])
+{
+	char posicion[DESCRIPTION_SIZE];
+
+do{
+	getString(posicion, "Ingrese la posicion\n arquero, defensor, mediocampista o delantero\n su opcion: ",
+	    	 					"Error, ingrese una posicion valida: ", 7, 14);
+
+	for(int i =0; posicion[i]!= '\0'; i++){
+		posicion[i] = tolower(posicion[i]);
+	}
+
+}while(strcmp(posicion,"mediocampista") != 0 && strcmp(posicion,"arquero") != 0 &&strcmp(posicion,"defensor") != 0 &&strcmp(posicion,"delantero") != 0);
+
+
+	strcpy(cadena, posicion);
+}
+/*
+ * \brief busco un jugador por id
+ * \param lista pido la lista de jugadores
+ * \param size el tamanio de los jugadores
+ * \param index el id a buscar
+ * \return -1 si no se encuentra 1 si la encontre
+ */
+int BuscarIdValido(eJugador lista[], int size, int index)
+{
+	int retorno = -1;
+
+	for (int i = 0; i < size; ++i)
+	{
+		if(lista[i].id == index)
+		{
+			retorno = 1;
+		}
+
+	}
+
+  return retorno;
+}
+/*
+ * \brief busco a un jugador por id
+ * \param lista pido la lista de jugadores
+ * \param size el tamanio de los jugadores
+ * \index la id de la confederacion
+ * \param listaConfederacion pido la lista de confederaciones
+ * \param sizeConf el tamanio de las confederaciones
+ * \return void
+ */
+void BuscarJugadorPorId(eJugador lista[], int size, int index, eConfederacion listaConfederacion)
+{
+	for(int i=0 ; i < size ; i++)
+	    {
+	        if(lista[i].estado == OCUPADO && lista[i].idConfederacion == index)
+	        {
+	        	MostrarUnJugador(lista[i], listaConfederacion,1);
+	        }
+	    }
 }

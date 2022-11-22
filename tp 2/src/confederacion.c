@@ -10,6 +10,8 @@ int altaConfederacion(eConfederacion listaConfederacion[], int size, int confede
 {
 	int retorno = -1;
     int auxContrato;
+    char auxNombre[DESCRIPTION_SIZE];
+    char auxRegion[DESCRIPTION_SIZE];
 
     for(int i = 0; i<size; i++){
 
@@ -17,19 +19,35 @@ int altaConfederacion(eConfederacion listaConfederacion[], int size, int confede
 
     	 listaConfederacion[i].id = confederaciones+1;
 
-    	 getString(listaConfederacion[i].nombre, "Ingrese el nombre de la confederacion: ",
-    	 					"Error, ingrese un nombre valido: ", 4, DESCRIPTION_SIZE);
+    	 do
+    	 {
+
+    		getString(auxNombre, "Ingrese el nombre de la confederacion: ",
+    	 					"Error, ingrese un nombre valido: ", 0, DESCRIPTION_SIZE);
+
+    	 }while(esSoloLetas(auxNombre) == 0);
+
+         strcpy(listaConfederacion[i].nombre, auxNombre);
+
+    	 fflush(stdin);
+    	 do
+		 {
+
+			getString(auxRegion, "Ingrese la region de la confederacion: ",
+    	    	 					"Error, ingrese una region valida: ", 0, DESCRIPTION_SIZE);
+
+		 }while(esSoloLetas(auxRegion) == 0);
+
+    	 strcpy(listaConfederacion[i].region, auxRegion);
 
     	 fflush(stdin);
 
-    	 getString(listaConfederacion[i].region, "Ingrese la region de la confederacion: ",
-    	    	 					"Error, ingrese una region valida: ", 4, DESCRIPTION_SIZE);
+    	 do
+		{
+			printf("Ingrese el anio de creacion \n");
+		}
+		 while((auxContrato < 1900 || auxContrato > 2020) || (getEntero(&auxContrato) !=0));
 
-    	 fflush(stdin);
-
-
-    	 auxContrato =  getInt("Ingrese el anio de creacion: ", "Error, anio invalido: ",
-    	     	 								1900, 2000);
     	 listaConfederacion[i].anioCreacion = auxContrato;
 
     	 listaConfederacion[i].estado = OCUPADO;
@@ -52,22 +70,32 @@ int BajaConfederacion(eConfederacion listaConfederacion[], int size)
 	int i;
 	int retorno = -1;
 	int index;
-   if(listaConfederacion[0].estado == OCUPADO){
+    int retornoFuncion;
 
 	   mostrarListadoConfederacion(listaConfederacion, size);
 
-    index = getInt("\n Ingrese el id a dar de baja: ","\n Error el id ingresado supera los limites: ",0,1000);
+    do
+	{
+		printf("Ingrese el id a dar de baja: \n");
+	}
+	 while(index < 0 || (getEntero(&index) !=0));
 
-    for(i =0 ; i < size; i++)
-        {
-          if(listaConfederacion[i].id == index)
-          {
-        	  listaConfederacion[i].estado = LIBRE;
-              retorno = 1;
-              break;
-          }
-        }
-   }
+  retornoFuncion = BuscarConfederacionPorId(listaConfederacion, size, index);
+
+	  if(retornoFuncion == 1)
+	  {
+	  		for(i =0 ; i < size; i++)
+			{
+			  if(listaConfederacion[i].id == index)
+			  {
+				  listaConfederacion[i].estado = LIBRE;
+				  retorno = 1;
+				  break;
+			  }
+			}
+	  }else{printf("No hay ninguna confederacion con esa id\n");}
+
+
     return retorno;
 }
 /**
@@ -84,8 +112,11 @@ void ModificarConfederaciones(eConfederacion lista[], int size)
 
 		  mostrarListadoConfederacion(lista, size);
 
-	auxId = getInt("Ingrese el codigo que quiere modificar: ", "Error, ingrese un codigo valido", 1, 1000);
-
+	do
+		{
+			printf("Ingrese el codigo que quiere modificar: \n");
+		}
+		 while(auxId > 0 && (getEntero(&auxId) !=0) && (auxId != ' '));
 	do{
 		opcion = subMenuConfederaciones();
 		switch(opcion){
@@ -115,14 +146,20 @@ void ModificarConfederaciones(eConfederacion lista[], int size)
  */
 void ModificarNombreConfederacion(eConfederacion lista[], int size, int index)
 {
+	char auxNombre[DESCRIPTION_SIZE];
 	for (int i = 0; i < size; i++) {
 
 			if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-				 getString(lista[i].nombre, "Ingrese el nombre de la confederacion: ",
-				    	 					"Error, ingrese un nombre valido: ", 4, DESCRIPTION_SIZE);
+				do
+				 {
 
-		    	 fflush(stdin);
+					getString(auxNombre, "Ingrese el nombre de la confederacion: ",
+									"Error, ingrese un nombre valido: ", 0, DESCRIPTION_SIZE);
+
+				 }while(esSoloLetas(auxNombre) == 0);
+
+				 strcpy(lista[i].nombre, auxNombre);
 				      break;
 			}
 		}
@@ -136,13 +173,21 @@ void ModificarNombreConfederacion(eConfederacion lista[], int size, int index)
  */
 void ModificarRegionConfederacion(eConfederacion lista[], int size, int index)
 {
+	char auxRegion[DESCRIPTION_SIZE];
 	for (int i = 0; i < size; i++) {
 
 				if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-			getString(lista[i].region, "Ingrese la region de la confederacion: ",
-					    	    	 		"Error, ingrese una region valida: ", 4, DESCRIPTION_SIZE);
-					      break;
+					do
+				 {
+
+					getString(auxRegion, "Ingrese la region de la confederacion: ",
+											"Error, ingrese una region valida: ", 0, DESCRIPTION_SIZE);
+
+				 }while(esSoloLetas(auxRegion) == 0);
+
+				 strcpy(lista[i].region, auxRegion);
+				 break;
 				}
 			}
 }
@@ -160,9 +205,13 @@ void ModificarAnioDeCreacionConfederacion(eConfederacion lista[], int size, int 
 
 				if(lista[i].estado == OCUPADO && lista[i].id == index){
 
-					 auxContrato =  getInt("Ingrese el anio de creacion: ", "Error, anio invalido: ",
-					    	     	 								1900, 2000);
-					    	 lista[i].anioCreacion = auxContrato;
+					 do
+					{
+						printf("Ingrese el anio de creacion \n");
+					}
+					 while((auxContrato < 1900 || auxContrato > 2020) || (getEntero(&auxContrato) !=0));
+
+					 lista[i].anioCreacion = auxContrato;
 					      break;
 				}
 			}
@@ -200,30 +249,10 @@ void OrdenamientoPorNombreDeConfederacion(eConfederacion listaConfederacion[], i
  */
 void ListadoDeConfederaciones(eConfederacion listaConfederacion[], int sizeConf, eJugador lista[], int size)
 {
-
-	for(int i =0; i<sizeConf; i++ ){
+	for(int i = 0;  i < sizeConf ; i++ )
+	{
 		BuscarJugadorPorId(lista, size, listaConfederacion[i].id, listaConfederacion[i]);
 	}
-
-}
-/*
- * \brief busco a un jugador por id
- * \param lista pido la lista de jugadores
- * \param size el tamanio de los jugadores
- * \index la id de la confederacion
- * \param listaConfederacion pido la lista de confederaciones
- * \param sizeConf el tamanio de las confederaciones
- * \return void
- */
-void BuscarJugadorPorId(eJugador lista[], int size, int index, eConfederacion listaConfederacion)
-{
-	for(int i=0;i<size;i++)
-	    {
-	        if(lista[i].estado == OCUPADO && lista[i].idConfederacion == index)
-	        {
-	        	MostrarUnJugador(lista[i], listaConfederacion,1);
-	        }
-	    }
 }
 /*
  * \brief itero en las confederaciones
@@ -260,4 +289,43 @@ void ListadoConfederacionesConSusJugadores(eJugador lista[], int size, eConfeder
 			}
 	}
 
+}
+/*
+ * \brief busco una conferencia por id
+ * \param lista pido la lista de confederacion
+ * \param size el tamanio de las confederaciones
+ * \param index el id a buscar
+ * \return -1 si no se encuentra 1 si la encontre
+ */
+int BuscarConfederacionPorId(eConfederacion lista[], int size, int index)
+{
+	int retorno = -1;
+
+	for (int i = 0; i < size; ++i)
+	{
+		if(lista[i].id == index)
+		{
+			retorno = 1;
+		}
+
+	}
+
+  return retorno;
+}
+/*
+ * \brief un litado de conferencia
+ * \param lista pido la lista de jugadores
+ * \param size el tamanio de los jugadores
+ * \param listaconfederacion lista de confederacion
+ *  \param sizeconf tamanio de la confederaciones
+ * \return void
+ */
+void ListarConfederacion(eJugador lista[], int size, eConfederacion listaConfederacion[], int sizeConf)
+{
+
+     for (int i = 0; i < sizeConf; ++i)
+     {
+		printf("%-20s\n",listaConfederacion[i].nombre);
+     ListadoConfederacionesConSusJugadores(lista, size, listaConfederacion[i], listaConfederacion[i].id);
+	 }
 }

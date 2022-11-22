@@ -5,11 +5,12 @@
  * \param size el tamanio de los jugadores
  * \return el promedio de los salarios
  */
-float PromedioDeTodosLosSalarios(eJugador lista[], int size)
+void PromedioDeTodosLosSalarios(eJugador lista[], int size)
 {
 	int acumulador=0;
      int contador=0;
      float promedio;
+     int jugadoresSueldo;
 
 	for(int i = 0; i<size; i++){
 	if(lista[i].estado == OCUPADO){
@@ -19,7 +20,9 @@ float PromedioDeTodosLosSalarios(eJugador lista[], int size)
 	}
 
 	promedio = sacarPromedio(acumulador, contador);
-	return promedio;
+    jugadoresSueldo = JugadoresCobranMasQuePromedio(lista, size, promedio);
+
+    MostrarJugadoresSueldoMayorPromedio(promedio, jugadoresSueldo, acumulador);
 }
 /*
  * \brief calculo el promedio
@@ -41,19 +44,20 @@ float sacarPromedio(int resultado, int acumulador)
  * \param size el tamanio de los jugadores
  * \return void
  */
-void JugadoresCobranMasQuePromedio(eJugador lista[], int size)
+int JugadoresCobranMasQuePromedio(eJugador lista[], int size, int promedio)
 {
-	int promedio;
 	int contador=0;
-	promedio = PromedioDeTodosLosSalarios(lista, size);
 
-    for(int i =0;i<size;i++){
+    for(int i =0;i<size;i++)
+    {
 
-    	if(lista[i].salario>promedio){
+    	if(lista[i].salario > promedio)
+    	{
     		contador++;
     	}
     }
-    MostrarJugadoresSueldoMayorPromedio(promedio, contador);
+
+    return contador;
 }
 /*
  * \brief busco la confederacion con mayor duracion de los contratos
