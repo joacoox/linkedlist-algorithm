@@ -54,7 +54,7 @@ int parser_JugadorFromText(FILE* pFile , LinkedList* pArrayListJugador)
  * \return int
  *
  */
-int parser_JugadorFromBinary(FILE* pFile , LinkedList* listaBinario)
+int parser_JugadorFromBinary(FILE* pFile , LinkedList* listaBinario, LinkedList* listaSeleccion)
 {
 	Jugador* unJugador;
     int retorno = 0;
@@ -72,7 +72,7 @@ int parser_JugadorFromBinary(FILE* pFile , LinkedList* listaBinario)
 				break;
 			}
 			ll_add(listaBinario, unJugador);
-			jug_printOne(unJugador);
+			jug_printOne(unJugador, listaSeleccion);
 			retorno = 1;
 		}while(!feof(pFile));
 
@@ -80,12 +80,14 @@ int parser_JugadorFromBinary(FILE* pFile , LinkedList* listaBinario)
 
     return retorno;
 }
-int parser_JugadorToBinary(FILE* pFile , LinkedList* pArrayListJugador, int indexSeleccion)
+int parser_JugadorToBinary(FILE* pFile , LinkedList* pArrayListJugador,LinkedList* pArrayListSeleccion, char confederacion[])
 {
 	int size;
 	int idSeleccion;
 	int retorno = 0;
+	char confederacionAux[30];
 	Jugador* jugador;
+    Seleccion* auxSeleccion;
 
 	if(pFile != NULL && pArrayListJugador != NULL)
 		{
@@ -96,11 +98,19 @@ int parser_JugadorToBinary(FILE* pFile , LinkedList* pArrayListJugador, int inde
 		        	  jugador = (Jugador*)ll_get(pArrayListJugador, i);
 		        	  jug_getIdSeleccion(jugador, &idSeleccion);
 
-						  if(idSeleccion == indexSeleccion)
+		        	  if(idSeleccion != 0)
+		        	  {
+                      auxSeleccion = selec_BuscarPorId(pArrayListSeleccion, idSeleccion);
+                      selec_getConfederacion(auxSeleccion, confederacionAux);
+
+						  if(strcmp(confederacionAux, confederacion) == 0)
 						  {
 							  fwrite(jugador, sizeof(Jugador),1, pFile);
 							  retorno = 1;
 						  }
+
+		        	  }
+
 		          }
 		}
  return retorno;
@@ -211,4 +221,36 @@ int parser_SeleccionToText(FILE* pFile , LinkedList* pArrayListSeleccion)
 		 return retorno;
 
 
+}
+int parser_IdToText(FILE* pFile , int id)
+{
+	    int retorno = -1;
+
+		if(pFile != NULL && id > 0)
+		{
+			fprintf(pFile,"%d\n",id);
+			retorno = 1;
+		}
+
+	 return retorno;
+}
+int parser_IdFromText(FILE* pFile)
+{
+	int id = -1;
+	char idtxt[10];
+	int valoresLeidos;
+
+		if(pFile != NULL)
+		{
+			valoresLeidos = fscanf(pFile,"%[^\n]\n", idtxt);
+
+			if(valoresLeidos == 1)
+			{
+		    id = atoi(idtxt);
+			id++;
+			controller_guardarIdModoTexto("id.txt" , id);
+			}
+	    }
+
+   return id;
 }

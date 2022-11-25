@@ -123,3 +123,55 @@ int selec_CompararPorNombre(void* unaSeleccion, void* otraSeleccion)
 
    return compara;
 }
+Seleccion* selec_BuscarPorId(LinkedList* pArraylistSeleccion, int index)
+{
+	int size;
+	int auxId;
+	Seleccion* aux= NULL;
+	Seleccion* retorno = NULL;
+
+  if(pArraylistSeleccion != NULL && index > 0)
+  {
+	  size = ll_len(pArraylistSeleccion);
+
+	  if(size > 0)
+	  {
+		  for(int i = 0 ; i < size ; i++)
+		  {
+			 aux = (Seleccion*)ll_get(pArraylistSeleccion, i);
+			  selec_getId(aux, &auxId);
+			  		if(auxId == index)
+			  		{
+			  			retorno = aux;
+			  			break;
+			  		}
+		  }
+
+	  }
+
+  }
+  return retorno;
+}
+int selec_PedirConfederacion(char palabra[])
+{
+	 int retorno = 0;
+	 char auxConfederacion[30];
+
+	 getString(auxConfederacion,"Ingrese la CONFEDERACION que quiera cargar a binario: ",3,12);
+
+	 for(int i =0; auxConfederacion[i]!= '\0'; i++)
+	{
+		 auxConfederacion[i] = toupper(auxConfederacion[i]);
+	}
+
+   if(strcmp(auxConfederacion,"UEFA") == 0 || strcmp(auxConfederacion,"CONMEBOL") == 0 || strcmp(auxConfederacion,"CONCACAF") == 0 || strcmp(auxConfederacion,"AFC") == 0
+		   || strcmp(auxConfederacion,"OFC") == 0|| strcmp(auxConfederacion,"CAF") == 0)
+   {
+	 strcpy(palabra, auxConfederacion);
+	retorno = 1;
+   }
+
+
+	return retorno;
+}
+

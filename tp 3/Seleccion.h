@@ -26,4 +26,7 @@ int selec_getConvocados(Seleccion* this,int* convocados);
 void selec_printOne(Seleccion* this);
 
 int selec_CompararPorNombre(void* unaSeleccion, void* otraSeleccion);
+Seleccion* selec_BuscarPorId(LinkedList* pArraylistSeleccion, int index);
+
+int selec_PedirConfederacion(char palabra[]);
 #endif // selec_H_INCLUDED

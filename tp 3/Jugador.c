@@ -185,21 +185,38 @@ int jug_getIdSeleccion(Jugador* this,int* idSeleccion)
 
 	return retorno;
 }
-void jug_printOne(Jugador* Jugador)
+void jug_printOne(Jugador* Jugador,LinkedList* pArraylistSeleccion)
 {
 	int id;
 	char nombreCompleto[100];
 	int edad;
 	char posicion[100];
 	char nacionalidad[100];
+	int idSeleccion;
+	Seleccion* aux;
+	char pais[30];
 
 	jug_getId(Jugador, &id);
 	jug_getNombreCompleto(Jugador, nombreCompleto);
 	jug_getEdad(Jugador, &edad);
 	jug_getPosicion(Jugador, posicion);
 	jug_getNacionalidad(Jugador, nacionalidad);
+	jug_getIdSeleccion(Jugador, &idSeleccion);
 
-	printf("%5d %-25s %-25d %-25s %-25s\n",id,nombreCompleto,edad,posicion,nacionalidad);
+
+
+	if(idSeleccion == 0)
+	{
+		printf("%5d %-25s %-25d %-25s %-25s No convocado\n",id,nombreCompleto,edad,posicion,nacionalidad);
+	}else
+	{
+	   aux = selec_BuscarPorId(pArraylistSeleccion, idSeleccion);
+	   selec_getPais(aux, pais);
+		printf("%5d %-25s %-25d %-25s %-25s %s\n",id,nombreCompleto,edad,posicion,nacionalidad, pais);
+	}
+
+
+
 }
 /*
  * \brief paso a minusculas lo que el usuario ingrese y valido el tamanio del texto
@@ -229,38 +246,25 @@ int ModificacionesJugador(LinkedList* pArrayListJugador)
 {
 	int opcion;
 	int index;
-	int size;
-	int auxId;
 	int retorno = 0;
-	int retornoIndex;
-    Jugador* jugador;
+    Jugador* jugador = NULL;
 
  if(pArrayListJugador != NULL)
  {
-	 do{
-		 printf("Ingrese el id a modificar: \n");
-		 retornoIndex = getEntero(&index);
 
-       }while((index < 0 || index > 5000) && retornoIndex != 0);
+	index = getNumeroEntreParametro(5000, 1, "Ingrese la id del jugador que quiera modificar: \n");
+     jugador = jug_BuscarPorId(pArrayListJugador, index);
 
-
-      opcion = subMenuModificaciones();
-      size = ll_len(pArrayListJugador);
-
-       for(int i = 0; i<size; i++)
-       {
-    	   jugador = (Jugador*)ll_get(pArrayListJugador, i);
-
-    	   jug_getId(jugador, &auxId);
-
-    	    if(auxId == index){
-
-    	    	retorno	= jug_Modificaciones(jugador, opcion);
-    	    	break;
-    	    }
-       }
+    if(jugador != NULL)
+    {
+     opcion = subMenuModificaciones();
+     retorno = jug_Modificaciones(jugador, opcion);
+    }
+    else
+    {
+    	printf("El id ingresado no representa a un jugador en servicio\n");
+    }
  }
-
   return retorno;
 }
 int jug_Modificaciones(Jugador* Jugador, int opcion)
@@ -283,23 +287,16 @@ int retorno = 0;
    }
     return retorno;
 }
-
 int jug_ModificacionNombre(Jugador* this)
 {
 	char auxNombre[100];
 	int retorno = 0;
 	if(this != NULL)
 	{
-		do
-		{
-			getString(auxNombre,"Ingrese el nombre: ", "Error, ingrese un nombre valido: ", 1, 100);
-		}
-		 while(esSoloLetas(auxNombre) == 0);
-
+		getString(auxNombre, "Ingrese el nombre completo del jugador: \n",5,100);
 		jug_setNombreCompleto(this, auxNombre);
 		retorno = 1;
 	}
-
 	return retorno;
 }
 int jug_ModificacionEdad(Jugador* this)
@@ -308,16 +305,10 @@ int jug_ModificacionEdad(Jugador* this)
 	int retorno = 0;
 	if(this != NULL)
 	{
-		do
-		{
-		printf("Ingrese la edad\n");
-		}
-		 while((auxEdad < 16 || auxEdad > 50) && (getEntero(&auxEdad) !=0));
-
+		auxEdad	= getNumeroEntreParametro(60, 18, "Ingrese la edad del jugador\nTiene que ser entre 18 y 60\nSu opcion: \n\n");
 		jug_setEdad(this, auxEdad);
 		retorno = 1;
 	}
-
 	return retorno;
 }
 int jug_ModificacionPosicion(Jugador* this)
@@ -328,15 +319,12 @@ int jug_ModificacionPosicion(Jugador* this)
 	{
 		do
 		{
-			getString(auxPosicion,"Ingrese la posicion del jugador: ", "Error, ingrese una posicion valida: ", 1, 100);
-
+			getString(auxPosicion,"Ingrese la posicion del jugador: ",5,100);
 		}
 		 while(getPosicion(auxPosicion) != 1);
-
 		jug_setPosicion(this, auxPosicion);
 		retorno = 1;
 	}
-
 	return retorno;
 }
 int jug_ModificacionNacionalidad(Jugador* this)
@@ -345,11 +333,7 @@ int jug_ModificacionNacionalidad(Jugador* this)
 	int retorno = 0;
 	if(this != NULL)
 	{
-		do
-		{
-			getString(auxNacionalidad,"Ingrese la nacionalidad: ", "Error, ingrese una nacionalidad valida: ", 1, 30);
-		}
-		 while(esSoloLetas(auxNacionalidad) == 0);
+		getString(auxNacionalidad,"Ingrese la nacionalidad: \n", 5,30);
 
 		jug_setNacionalidad(this, auxNacionalidad);
 		retorno = 1;
@@ -430,140 +414,180 @@ int jug_CompararPorNombre(void* unJugador, void* otroJugador)
 int jug_convocar(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion)
 {
 	int retorno=0;
-	int size;
-	int sizeConf;
-    int jugadorId;
+    int jugadorIdSeleccion;
 	int idSeleccion;
-	int idSeleccionJug;
     int convocados;
     int indexJugador;
     int indexSeleccion;
 
-    int retornoNumeros;
-    Jugador* jugador;
-    Seleccion* seleccion;
+    Jugador* jugador = NULL;
+    Seleccion* seleccion = NULL;;
 
 	if(pArrayListJugador!= NULL && pArrayListSeleccion != NULL)
 	{
 
-		controller_listarJugadores(pArrayListJugador);
-
-		do
+		jug_ListaJugadoresPorCriterio(pArrayListJugador, pArrayListSeleccion, 1);
+		indexJugador = getNumeroEntreParametro(5000, 0, "Ingrese el ID del jugador al que quiere convocar: \n");
+		jugador = jug_BuscarPorId(pArrayListJugador, indexJugador);
+		jug_getIdSeleccion(jugador, &jugadorIdSeleccion);
+		if(jugador != NULL && jugadorIdSeleccion == 0)
 		{
-			printf("Ingrese el id del jugador que quiere convocar: ");
-			retornoNumeros= getEntero(&indexJugador);
-
-		}while((indexJugador <= 0 || indexJugador > 5000) && retornoNumeros != 0);
 
 		controller_listarSelecciones(pArrayListSeleccion);
-
-		do
-		{
-			 printf("Ingrese la seleccion a la que quiere convocar al jugador: ");
-			 retornoNumeros= getEntero(&indexSeleccion);
-
-		}while((indexSeleccion  < 0 || indexSeleccion  > 33) && retornoNumeros != 0);
-
-		size=ll_len(pArrayListJugador);
-        sizeConf = ll_len(pArrayListSeleccion);
-
-			for(int i = 0; i < size; i++)
+		indexSeleccion = getNumeroEntreParametro(32, 0, "Ingrese la seleccion a la que quiere convocar al jugador: \n");
+		seleccion = selec_BuscarPorId(pArrayListSeleccion, indexSeleccion);
+			if(seleccion != NULL)
 			{
+				selec_getConvocados(seleccion, &convocados);
 
-				jugador = (Jugador*)ll_get(pArrayListJugador, i);
-                jug_getId(jugador, &jugadorId); // ID JUGADOR
-                jug_getIdSeleccion(jugador, &idSeleccionJug); // ID DE LA SELECCION JUGADOR
-
-				for(int j= 0; j< sizeConf; j++)
+				if(convocados < 22)
 				{
-					seleccion = (Seleccion*)ll_get(pArrayListSeleccion, j);
-					selec_getId(seleccion, &idSeleccion); // ID SELECCION
-					selec_getConvocados(seleccion, &convocados);// CANTIDAD DE CONVOCOADOS POR SELECCION
-
-					  if(jugadorId == indexJugador && idSeleccion == indexSeleccion)
-						{
-							   if(convocados < 22 && idSeleccionJug == 0)
-							   {
-								   selec_setConvocados(seleccion, convocados+1);
-								   jug_setIdSeleccion(jugador, indexSeleccion);
-								   retorno = 1;
-							   }
-						}
+				selec_setConvocados(seleccion, convocados+1);
+				selec_getId(seleccion, &idSeleccion);
+				jug_setIdSeleccion(jugador, idSeleccion);
+				printf("La convocacion fue un exito rotundo\n");
+				}else
+				{
+					printf("Error, ya hay 22 convocados\n");
 				}
-
+			}else
+			{
+				printf("El id ingresado no representa a una seleccion en servicio");
 			}
-	}
+		}else
+		{
+			printf("El id ingresado no representa a un jugador en servicio\n O el jugador ya esta en una seleccion");
+		}
+
+	 }
+
 
 	return retorno;
 }
-int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador)
+int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion)
 {
 	int retorno=0;
-	int size;
-    int jugadorId;
+    int selecIdAux;
     int indexJugador;
-    int retornoNum;
-    Jugador* jugador;
+    int auxConvocados;
+    Seleccion* aux = NULL;
+    Jugador* jugador = NULL;
 
 	if(pArrayListJugador!= NULL)
 	{
 
-		jug_printJugadoresListados(pArrayListJugador);
+		jug_ListaJugadoresPorCriterio(pArrayListJugador, pArrayListSeleccion, 2);
+		indexJugador = getNumeroEntreParametro(5000, 0, "Ingrese el id del jugador que quiera sacar de la seleccion: \n");
+		jugador = jug_BuscarPorId(pArrayListJugador, indexJugador);
 
-		do
+		if(jugador != NULL)
 		{
-			 printf("Ingrese el id del jugador que quiere quitar: \n");
-			 retornoNum = getEntero(&indexJugador);
-
-		}while((indexJugador < 0 || indexJugador > 5000) && retornoNum != 0);
-
-		size=ll_len(pArrayListJugador);
-
-			for(int i = 0; i < size; i++)
+			jug_getIdSeleccion(jugador, &selecIdAux);
+			if(selecIdAux != 0)
 			{
-
-				jugador = (Jugador*)ll_get(pArrayListJugador, i);
-                jug_getId(jugador, &jugadorId);
-
-                 if(jugadorId == indexJugador)
-                 {
-                	 jug_setIdSeleccion(jugador, 0);
-                	 return 1;
-                 }
-
+				aux = selec_BuscarPorId(pArrayListSeleccion, selecIdAux);
+				selec_getConvocados(aux, &auxConvocados);
+				selec_setConvocados(aux, auxConvocados-1);
+				 jug_setIdSeleccion(jugador, 0);
+				 printf("Se quito al jugador de la seleccion, la proxima que juegue mejor\n");
+				 retorno = 1;
+			}else
+			{
+			 printf("El jugador que quiere sacar de la seleccion no esta en ninguna seleccion\n");
 			}
+		}else
+		{
+			printf("El id ingresado no representa a un jugador en servicio \n");
+		}
 	}
 
 	return retorno;
 }
-void jug_printJugadoresListados(LinkedList* pArrayListJugador)
+int jug_ListaJugadoresPorCriterio(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion, int opcion)
 {
-	int id;
-	char nombreCompleto[100];
-	int edad;
-	char posicion[100];
-	char nacionalidad[100];
-    int size;
-    int idSeleccion;
-    Jugador* jugador;
+	int size;
+	int retorno = 0;
+	int idAux;
+	Jugador* jugador= NULL;
 
-
+	Headers(1);
 	if(pArrayListJugador != NULL)
-	{
-		size = ll_len(pArrayListJugador);
-		for(int i = 0; i < size; i++)
 		{
-			jugador = (Jugador*)ll_get(pArrayListJugador, i);
-				jug_getId(jugador, &id);
-				jug_getNombreCompleto(jugador, nombreCompleto);
-				jug_getEdad(jugador, &edad);
-				jug_getPosicion(jugador, posicion);
-				jug_getNacionalidad(jugador, nacionalidad);
-				jug_getIdSeleccion(jugador, &idSeleccion);
-				if(idSeleccion != 0)
+			size = ll_len(pArrayListJugador);
+
+			for(int i = 0; i<size;i++)
+			{
+				jugador = (Jugador*)ll_get(pArrayListJugador, i);
+				jug_getIdSeleccion(jugador, &idAux);
+				switch(opcion)
 				{
-			    	jug_printOne(jugador);
+				case 1:
+					if(jugador != NULL && idAux == 0) // no convocado
+					{
+						jug_printOne(jugador, pArrayListSeleccion);
+						retorno = 1;
+					}
+					break;
+				case 2:
+					if(jugador != NULL && idAux != 0) // convocados
+					{
+						jug_printOne(jugador, pArrayListSeleccion);
+					}
+					break;
 				}
+
+
+			}
 		}
-	}
+	return retorno;
+}
+Jugador* jug_BuscarPorId(LinkedList* pArraylistJugador, int index)
+{
+	int indice;
+	Jugador* aux= NULL;
+	Jugador* retorno = NULL;
+
+  if(pArraylistJugador != NULL && index > 0)
+  {
+	  indice = jug_BuscarPorIndice(pArraylistJugador, index);
+	  aux = ll_get(pArraylistJugador, indice);
+	      if(aux != NULL)
+	      {
+	    	  retorno = aux;
+	      }
+
+  }
+
+  return retorno;
+}
+int jug_BuscarPorIndice(LinkedList* pArraylistJugador, int index)
+{
+	int size;
+	int auxId;
+	Jugador* aux= NULL;
+	int retorno = -1;
+	int i;
+
+  if(pArraylistJugador != NULL && index > 0)
+  {
+	  size = ll_len(pArraylistJugador);
+
+	  if(size > 0)
+	  {
+		  for(i = 0 ; i < size ; i++)
+		  {
+			 aux = (Jugador*)ll_get(pArraylistJugador, i);
+			 jug_getId(aux, &auxId);
+			  		if(auxId == index)
+			  		{
+			  			retorno = i;
+			  			break;
+			  		}
+		  }
+
+	  }
+
+  }
+
+  return retorno;
 }

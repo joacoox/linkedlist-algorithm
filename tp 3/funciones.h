@@ -16,4 +16,5 @@ int subMenuModificaciones(void);
 int ListadosOrdenadosPorCriterio(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion);
 int subMenuOrdenarListar(void);
 int subMenuConvocaciones(void);
+void Headers(int opcion);
 #endif

@@ -42,8 +42,8 @@ int jug_getEdad(Jugador* this,int* edad);
 int jug_setIdSeleccion(Jugador* this,int idSeleccion);
 int jug_getIdSeleccion(Jugador* this,int* idSeleccion);
 
-void jug_printOne(Jugador* Jugador);
-void jug_printJugadoresListados(LinkedList* pArrayListJugador);
+void jug_printOne(Jugador* Jugador, LinkedList* pArraylistSeleccion);
+int jug_ListaJugadoresPorCriterio(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion, int opcion);
 
 int getPosicion(char posicion[]);
 
@@ -60,5 +60,9 @@ int jug_CompararPorEdad(void* unJugador, void* otroJugador);
 int jug_CompararPorNombre(void* unJugador, void* otroJugador);
 
 int jug_convocar(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion);
-int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador);
+int jug_quitarDeLaSeleccion(LinkedList* pArrayListJugador, LinkedList* pArrayListSeleccion);
+
+Jugador* jug_BuscarPorId(LinkedList* pArraylistJugador, int index);
+int jug_BuscarPorIndice(LinkedList* pArraylistJugador, int index);
+
 #endif // jug_H_INCLUDED
